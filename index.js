@@ -16,7 +16,7 @@ app.use("/posts", postRoutes);
 app.use("/user", userRouter);
 
 const CONNECTION_URL =
-  "MONGODB_URL";
+  process.env.MONGODB_URL;
 const PORT = process.env.PORT || 5000;
 
 mongoose
