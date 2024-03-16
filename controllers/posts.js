@@ -47,6 +47,49 @@ export const getPostsByCreator = async (req, res) => {
     }
 }
 
+export const getTags = async (req, res) => {
+  try {
+    const { inputSearch } = req.body;
+ console.log(inputSearch)
+    const allPosts = await Post.find({}, { _id: 0, tags: 1 }); 
+
+    if (!allPosts || allPosts.length === 0) {
+      return res.status(404).json({ message: 'No posts found' });
+    }
+
+    const allTags = allPosts.reduce((acc, post) => {
+      if (post.tags && Array.isArray(post.tags)) {
+        acc.push(...post.tags);
+      }
+      return acc;
+    }, []);
+
+
+    let matchingTags;
+    if (inputSearch) {
+      matchingTags = allTags.filter(tag => tag.toLowerCase().startsWith(inputSearch.toLowerCase())).slice(0, 6);
+    } else {
+
+      matchingTags = allTags.slice(0, 5);
+    }
+
+    if (matchingTags.length === 0) {
+      return res.status(200).json({ tags:[]});
+    }
+
+    const uniqueMatchingTags = [...new Set(matchingTags)];
+
+    res.status(200).json({ tags: uniqueMatchingTags }); 
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+
+
 export const getPost=  async (req, res) => {
      const { id } = req.params;
     try{
